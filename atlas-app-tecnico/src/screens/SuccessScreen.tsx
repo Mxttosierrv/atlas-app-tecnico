@@ -2,8 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
-import { C } from '../theme/colors';
-import { s } from '../styles/styles';
 import type { Visit } from '../types';
 
 // ─── Pantalla Éxito ───────────────────────────────────────────────────────────
@@ -15,27 +13,33 @@ type SuccessProps = {
 
 export function SuccessScreen({ visit, online, onDone }: SuccessProps) {
   return (
-    <View style={s.successContainer}>
-      <View style={s.successIcon}>
-        <Feather name="check-circle" size={30} color={C.green} />
+    <View className="flex-1 items-center justify-center p-6">
+      <View className="w-16 h-16 rounded-full bg-green-dim border border-green/25 items-center justify-center mb-[18px]">
+        <Feather name="check-circle" size={30} color="#4ADE80" />
       </View>
-      <Text style={[s.heading, { fontSize: 22, marginBottom: 6 }]}>Visita finalizada</Text>
-      <Text style={[s.subText, { marginBottom: 20, textAlign: 'center', maxWidth: 230 }]}>
+      <Text className="text-text1 font-bold text-[22px] mb-1.5 tracking-tight">Visita finalizada</Text>
+      <Text className="text-xs text-text2 mb-5 text-center max-w-[230px]">
         {visit.service} · {visit.client}
       </Text>
       <View
-        style={[s.syncPill, {
-          backgroundColor: online ? C.greenDim : C.orangeDim,
-          borderColor: online ? C.green + '30' : C.orange + '30',
-        }]}
+        className={`flex-row items-center px-3.5 py-[7px] rounded-full border mb-7 ${
+          online ? 'bg-green-dim border-green/30' : 'bg-brand-dim border-brand/30'
+        }`}
       >
-        <Feather name={online ? 'check' : 'alert-triangle'} size={12} color={online ? C.green : C.orangeText} />
-        <Text style={{ fontSize: 12, color: online ? C.green : C.orangeText, marginLeft: 6, fontWeight: '500' }}>
+        <Feather name={online ? 'check' : 'alert-triangle'} size={12} color={online ? '#4ADE80' : '#FB923C'} />
+        <Text className={`text-xs ml-1.5 font-medium ${online ? 'text-green' : 'text-brand-text'}`}>
           {online ? 'Sincronizada con el sistema' : 'Guardada · pendiente de sincronizar'}
         </Text>
       </View>
-      <TouchableOpacity onPress={onDone} style={[s.primaryBtn, { paddingHorizontal: 32 }]}>
-        <Text style={s.primaryBtnText}>Volver a mis visitas</Text>
+      <TouchableOpacity
+        onPress={onDone}
+        className="bg-brand rounded-xl py-[13px] px-8 items-center"
+        style={{
+          shadowColor: '#F97316', shadowOpacity: 0.35, shadowRadius: 12,
+          shadowOffset: { width: 0, height: 4 }, elevation: 6,
+        }}
+      >
+        <Text className="text-white text-sm font-bold">Volver a mis visitas</Text>
       </TouchableOpacity>
     </View>
   );

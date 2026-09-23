@@ -1,8 +1,9 @@
+import './global.css';
+
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { C } from './src/theme/colors';
 import { CHECKLIST_ITEMS, MAX_PHOTOS, VISITS_INIT } from './src/data/mockData';
 import { AgendaScreen } from './src/screens/AgendaScreen';
 import { DetailScreen } from './src/screens/DetailScreen';
@@ -71,7 +72,7 @@ export default function AtlasTecnico() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
+      <SafeAreaView className="flex-1 bg-bg">
         <StatusBar style="light" />
 
         {view === 'agenda' && (

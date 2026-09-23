@@ -2,8 +2,6 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
-import { C } from '../theme/colors';
-import { s } from '../styles/styles';
 import { ConnPill, StatusBadge } from '../components/common';
 import { SERVICE_COLOR, SERVICE_ICON } from '../data/mockData';
 import type { Visit } from '../types';
@@ -20,30 +18,30 @@ export function AgendaScreen({ visits, online, onToggleOnline, onOpen }: AgendaP
   const completed = visits.filter((v) => v.status === 'completada').length;
   return (
     <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+      className="flex-1"
+      contentContainerClassName="p-4 pb-8"
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
-      <View style={s.row}>
-        <View style={s.rowStart}>
-          <View style={s.logo}>
-            <Text style={s.logoText}>A</Text>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center">
+          <View className="w-[30px] h-[30px] rounded-[9px] bg-card border border-brand/40 items-center justify-center">
+            <Text className="text-brand text-base font-bold">A</Text>
           </View>
-          <Text style={s.appTitle}>Atlas técnico</Text>
+          <Text className="text-sm font-semibold text-text1 ml-2">Atlas técnico</Text>
         </View>
         <ConnPill online={online} onToggle={onToggleOnline} />
       </View>
 
       {/* Day banner */}
-      <View style={[s.card, { marginTop: 16, marginBottom: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+      <View className="bg-card border border-border rounded-2xl p-3.5 mt-4 mb-3.5 flex-row justify-between items-center">
         <View>
-          <Text style={[s.mono, { fontSize: 10, color: C.text3, letterSpacing: 1 }]}>MIÉRCOLES</Text>
-          <Text style={[s.heading, { fontSize: 20, marginTop: 2 }]}>15 de mayo</Text>
+          <Text className="font-mono text-[10px] text-text3 tracking-[1px]">MIÉRCOLES</Text>
+          <Text className="text-text1 font-bold text-xl mt-0.5 tracking-tight">15 de mayo</Text>
         </View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <Text style={[s.heading, { fontSize: 26 }]}>{visits.length}</Text>
-          <Text style={{ fontSize: 10, color: C.text3, letterSpacing: 0.5 }}>
+        <View className="items-end">
+          <Text className="text-text1 font-bold text-[26px] tracking-tight">{visits.length}</Text>
+          <Text className="text-[10px] text-text3 tracking-[0.5px]">
             VISITAS · {completed} OK
           </Text>
         </View>
@@ -51,42 +49,53 @@ export function AgendaScreen({ visits, online, onToggleOnline, onOpen }: AgendaP
 
       {/* Visit cards */}
       {visits.map((v) => {
-        const accentColor = SERVICE_COLOR[v.service] || C.orange;
+        const accentColor = SERVICE_COLOR[v.service] || '#F97316';
         const iconName    = SERVICE_ICON[v.service] || 'tool';
         const isCompleted = v.status === 'completada';
         return (
           <TouchableOpacity
             key={v.id}
             onPress={() => onOpen(v.id)}
-            style={[s.visitCard, isCompleted && { opacity: 0.55 }]}
+            className={`bg-card border border-border-bright rounded-2xl p-3 pl-4 mb-2 relative overflow-hidden ${
+              isCompleted ? 'opacity-[0.55]' : ''
+            }`}
             activeOpacity={0.75}
           >
             {/* left accent bar */}
-            <View style={[s.accentBar, { backgroundColor: isCompleted ? C.text3 : accentColor }]} />
+            <View
+              className="absolute left-0 top-2 bottom-2 w-[3px] rounded-[2px]"
+              style={{ backgroundColor: isCompleted ? '#4B5563' : accentColor }}
+            />
 
-            <View style={[s.row, { marginBottom: 8 }]}>
-              <View style={s.rowStart}>
-                <Feather name="clock" size={11} color={C.text3} />
-                <Text style={[s.mono, { fontSize: 11, color: C.text3, marginLeft: 4 }]}>{v.time}</Text>
+            <View className="flex-row items-center justify-between mb-2">
+              <View className="flex-row items-center">
+                <Feather name="clock" size={11} color="#4B5563" />
+                <Text className="font-mono text-[11px] text-text3 ml-1">{v.time}</Text>
               </View>
               <StatusBadge status={v.status} />
             </View>
 
-            <View style={s.row}>
-              <View style={[s.serviceIcon, { backgroundColor: accentColor + '20', borderColor: accentColor + '35' }]}>
+            <View className="flex-row items-center justify-between">
+              <View
+                className="w-9 h-9 rounded-[10px] border items-center justify-center"
+                style={{ backgroundColor: accentColor + '20', borderColor: accentColor + '35' }}
+              >
                 <Feather name={iconName} size={16} color={accentColor} />
               </View>
-              <View style={{ flex: 1, marginLeft: 10 }}>
-                <Text style={[s.heading, { fontSize: 13 }]}>{v.service}</Text>
-                <Text style={s.subText}>{v.client}</Text>
-                <View style={[s.rowStart, { marginTop: 4 }]}>
-                  <Feather name="map-pin" size={11} color={C.text3} />
-                  <Text style={[s.subText, { marginLeft: 4, fontSize: 11, flexShrink: 1 }]} numberOfLines={1}>
+              <View className="flex-1 ml-2.5">
+                <Text className="text-text1 font-bold text-[13px]">{v.service}</Text>
+                <Text className="text-xs text-text2">{v.client}</Text>
+                <View className="flex-row items-center mt-1">
+                  <Feather name="map-pin" size={11} color="#4B5563" />
+                  <Text
+                    className="text-text2 text-[11px] ml-1 flex-shrink"
+                    numberOfLines={1}
+                  >
                     {v.address}
                   </Text>
                 </View>
               </View>
-              <Feather name="chevron-right" size={14} color={C.text3} style={{ marginTop: 4 }} />
+              <Feather name="chevron-right" size={14} color="#4B5563" style={{ marginTop: 4 }} />
             </View>
           </TouchableOpacity>
         );

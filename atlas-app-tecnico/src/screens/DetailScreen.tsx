@@ -3,8 +3,6 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-nativ
 import { Feather } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 
-import { C } from '../theme/colors';
-import { s } from '../styles/styles';
 import { ConnPill, StatusBadge, SectionLabel, DataRow, Card } from '../components/common';
 import { CHECKLIST_ITEMS, TABS, MAX_PHOTOS } from '../data/mockData';
 import { dbmQuality } from '../utils/helpers';
@@ -33,39 +31,42 @@ export function DetailScreen(p: DetailProps) {
   const progress = `${(p.doneCount / total) * 100}%` as `${number}%`;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       {/* Top bar */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12 }}>
-        <View style={[s.row, { marginBottom: 12 }]}>
-          <TouchableOpacity onPress={p.onBack} style={s.backBtn}>
-            <Feather name="arrow-left" size={16} color={C.text1} />
+      <View className="px-4 pt-3 pb-3">
+        <View className="flex-row items-center justify-between mb-3">
+          <TouchableOpacity
+            onPress={p.onBack}
+            className="bg-white/[0.06] border border-border rounded-[9px] p-[7px] items-center justify-center"
+          >
+            <Feather name="arrow-left" size={16} color="#F5F5F5" />
           </TouchableOpacity>
           <ConnPill online={p.online} onToggle={p.onToggleOnline} />
         </View>
-        <Text style={[s.mono, { fontSize: 10, color: C.text3, marginBottom: 3 }]}>
+        <Text className="font-mono text-[10px] text-text3 mb-[3px]">
           {p.visit.id} · {p.visit.zone}
         </Text>
-        <View style={[s.row, { marginBottom: 2 }]}>
-          <Text style={[s.heading, { fontSize: 17, flex: 1 }]}>{p.visit.service}</Text>
+        <View className="flex-row items-center justify-between mb-0.5">
+          <Text className="text-text1 font-bold text-[17px] flex-1 tracking-tight">{p.visit.service}</Text>
           <StatusBadge status={p.visit.status} />
         </View>
-        <Text style={s.subText}>{p.visit.client}</Text>
+        <Text className="text-xs text-text2">{p.visit.client}</Text>
       </View>
 
       {/* Tabs */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={s.tabsBar}
-        contentContainerStyle={{ paddingHorizontal: 12 }}
+        className="flex-grow-0 border-b border-border"
+        contentContainerClassName="px-3"
       >
         {TABS.map((t) => (
           <TouchableOpacity
             key={t.id}
             onPress={() => p.setTab(t.id)}
-            style={[s.tab, p.tab === t.id && s.tabActive]}
+            className={`px-2.5 py-2 border-b-2 ${p.tab === t.id ? 'border-brand' : 'border-transparent'}`}
           >
-            <Text style={[s.tabText, p.tab === t.id && s.tabTextActive]}>
+            <Text className={`text-xs ${p.tab === t.id ? 'font-semibold text-text1' : 'text-text3'}`}>
               {t.label}{t.id === 'checklist' ? ` ${p.doneCount}/${total}` : ''}
             </Text>
           </TouchableOpacity>
@@ -74,28 +75,35 @@ export function DetailScreen(p: DetailProps) {
 
       {/* Content */}
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+        className="flex-1"
+        contentContainerClassName="p-4 pb-8"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         {/* RESUMEN */}
         {p.tab === 'resumen' && (
           <View>
-            <Card style={{ marginBottom: 10 }}>
+            <Card className="mb-[10px]">
               <DataRow icon="map-pin" label="Dirección" value={p.visit.address} />
               <DataRow icon="clock"   label="Ventana"   value={p.visit.time} mono />
               <DataRow icon="tool"    label="Zona"      value={p.visit.zone} last />
             </Card>
             <SectionLabel>Información del equipo</SectionLabel>
-            <Card style={{ marginBottom: 16 }}>
+            <Card className="mb-4">
               <DataRow label="Modelo"       value={p.visit.equipo.modelo} />
               <DataRow label="ICCID SIM"    value={p.visit.equipo.iccid} mono />
               <DataRow label="Última falla" value={p.visit.equipo.falla} last />
             </Card>
             {p.visit.status !== 'completada' && (
-              <TouchableOpacity onPress={p.onConfirmAccess} style={s.primaryBtn}>
-                <Text style={s.primaryBtnText}>Confirmar ingreso y comenzar</Text>
+              <TouchableOpacity
+                onPress={p.onConfirmAccess}
+                className="bg-brand rounded-xl p-[13px] items-center"
+                style={{
+                  shadowColor: '#F97316', shadowOpacity: 0.35, shadowRadius: 12,
+                  shadowOffset: { width: 0, height: 4 }, elevation: 6,
+                }}
+              >
+                <Text className="text-white text-sm font-bold">Confirmar ingreso y comenzar</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -104,11 +112,11 @@ export function DetailScreen(p: DetailProps) {
         {/* CHECKLIST */}
         {p.tab === 'checklist' && (
           <View>
-            <View style={[s.row, { marginBottom: 14 }]}>
-              <View style={s.progressTrack}>
-                <View style={[s.progressFill, { width: progress }]} />
+            <View className="flex-row items-center mb-3.5">
+              <View className="flex-1 h-1 bg-surface rounded-full overflow-hidden">
+                <View className="h-full bg-brand rounded-full" style={{ width: progress }} />
               </View>
-              <Text style={[s.mono, { fontSize: 11, color: C.text2, marginLeft: 10 }]}>
+              <Text className="font-mono text-[11px] text-text2 ml-2.5">
                 {p.doneCount}/{total}
               </Text>
             </View>
@@ -118,17 +126,23 @@ export function DetailScreen(p: DetailProps) {
                 <TouchableOpacity
                   key={item.id}
                   onPress={() => p.onToggle(item.id)}
-                  style={[s.checkItem, isChecked && { backgroundColor: C.greenDim, borderColor: C.green + '40' }]}
+                  className={`flex-row items-start gap-2.5 border rounded-xl p-[11px] mb-[7px] ${
+                    isChecked ? 'bg-green-dim border-green/25' : 'bg-card border-border'
+                  }`}
                   activeOpacity={0.75}
                 >
-                  <View style={[s.checkCircle, isChecked && { backgroundColor: C.green, borderColor: C.green }]}>
+                  <View
+                    className={`w-5 h-5 rounded-full border-[1.5px] items-center justify-center mt-px ${
+                      isChecked ? 'bg-green border-green' : 'border-text3'
+                    }`}
+                  >
                     {isChecked ? <Feather name="check" size={11} color="#fff" /> : null}
                   </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[s.heading, { fontSize: 12, color: isChecked ? C.green : C.text1 }]}>
+                  <View className="flex-1">
+                    <Text className={`font-bold text-xs ${isChecked ? 'text-green' : 'text-text1'}`}>
                       {String(idx + 1).padStart(2, '0')} {item.title}
                     </Text>
-                    <Text style={[s.subText, { fontSize: 11, marginTop: 2 }]}>{item.desc}</Text>
+                    <Text className="text-text2 text-[11px] mt-0.5">{item.desc}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -140,29 +154,29 @@ export function DetailScreen(p: DetailProps) {
         {p.tab === 'equipo' && (
           <View>
             <SectionLabel>Datos del sistema</SectionLabel>
-            <Card style={{ marginBottom: 14 }}>
+            <Card className="mb-3.5">
               <DataRow label="Modelo"    value={p.visit.equipo.modelo} />
               <DataRow label="ICCID SIM" value={p.visit.equipo.iccid} mono last />
             </Card>
 
             <SectionLabel>Registro en terreno</SectionLabel>
-            <Card style={{ marginBottom: 10 }}>
-              <View style={[s.row, { marginBottom: 10 }]}>
-                <Text style={{ fontSize: 12, color: C.text2, fontWeight: '500' }}>Nivel de señal</Text>
-                <Text style={[s.mono, { fontSize: 12, color: quality.color, fontWeight: '600' }]}>
+            <Card className="mb-[10px]">
+              <View className="flex-row items-center justify-between mb-2.5">
+                <Text className="text-xs text-text2 font-medium">Nivel de señal</Text>
+                <Text className="font-mono text-xs font-semibold" style={{ color: quality.color }}>
                   {p.dbm} dBm · {quality.label}
                 </Text>
               </View>
 
               {/* Signal bars */}
-              <View style={[s.row, { height: 24, alignItems: 'flex-end', marginBottom: 10 }]}>
+              <View className="flex-row items-end h-6 mb-2.5">
                 {[1, 2, 3, 4].map((b) => (
                   <View
                     key={b}
+                    className="flex-1 mx-0.5 rounded-[3px]"
                     style={{
-                      flex: 1, marginHorizontal: 2,
-                      height: 6 + b * 4, borderRadius: 3,
-                      backgroundColor: b <= quality.bars ? quality.color : C.surface,
+                      height: 6 + b * 4,
+                      backgroundColor: b <= quality.bars ? quality.color : '#242424',
                     }}
                   />
                 ))}
@@ -174,32 +188,33 @@ export function DetailScreen(p: DetailProps) {
                 step={1}
                 value={p.dbm}
                 onValueChange={p.onDbmChange}
-                minimumTrackTintColor={C.orange}
-                maximumTrackTintColor={C.surface}
-                thumbTintColor={C.orange}
+                minimumTrackTintColor="#F97316"
+                maximumTrackTintColor="#242424"
+                thumbTintColor="#F97316"
                 style={{ width: '100%' }}
               />
 
-              <View style={[s.divider, { marginVertical: 12 }]} />
+              <View className="h-px bg-border my-3" />
 
-              <Text style={{ fontSize: 12, color: C.text2, fontWeight: '500', marginBottom: 8 }}>
+              <Text className="text-xs text-text2 font-medium mb-2">
                 Estado del equipo
               </Text>
-              <View style={[s.row, { gap: 8, marginBottom: p.estado === 'falla' ? 10 : 0 }]}>
+              <View className={`flex-row gap-2 ${p.estado === 'falla' ? 'mb-2.5' : 'mb-0'}`}>
                 {(['operativo', 'falla'] as const).map((opt) => {
                   const active = p.estado === opt;
-                  const color  = opt === 'operativo' ? C.green : C.red;
-                  const dim    = opt === 'operativo' ? C.greenDim : C.redDim;
+                  const activeClass = opt === 'operativo'
+                    ? 'border-green/50 bg-green-dim'
+                    : 'border-red/50 bg-red-dim';
+                  const textActiveClass = opt === 'operativo' ? 'text-green' : 'text-red';
                   return (
                     <TouchableOpacity
                       key={opt}
                       onPress={() => p.onEstadoChange(opt)}
-                      style={[s.estadoBtn, {
-                        borderColor: active ? color + '50' : C.border,
-                        backgroundColor: active ? dim : 'transparent',
-                      }]}
+                      className={`flex-1 p-[9px] rounded-[10px] border items-center ${
+                        active ? activeClass : 'border-border bg-transparent'
+                      }`}
                     >
-                      <Text style={{ fontSize: 12, fontWeight: '600', color: active ? color : C.text3 }}>
+                      <Text className={`text-xs font-semibold ${active ? textActiveClass : 'text-text3'}`}>
                         {opt === 'operativo' ? 'Operativo' : 'Con falla'}
                       </Text>
                     </TouchableOpacity>
@@ -212,23 +227,30 @@ export function DetailScreen(p: DetailProps) {
                   value={p.fallaNote}
                   onChangeText={p.onFallaNoteChange}
                   placeholder="Describe la falla encontrada"
-                  placeholderTextColor={C.text3}
+                  placeholderTextColor="#4B5563"
                   multiline
                   numberOfLines={3}
-                  style={[s.textarea, { borderColor: C.red + '30' }]}
+                  className="bg-card border border-red/30 rounded-xl p-3 text-text1 text-[13px] min-h-[120px]"
+                  style={{ textAlignVertical: 'top' }}
                 />
               )}
             </Card>
 
             <TouchableOpacity
               onPress={p.onIccidVerify}
-              style={[s.checkItem, p.iccidVerified && { backgroundColor: C.greenDim, borderColor: C.green + '40' }]}
+              className={`flex-row items-center gap-2.5 border rounded-xl p-[11px] mb-[7px] ${
+                p.iccidVerified ? 'bg-green-dim border-green/25' : 'bg-card border-border'
+              }`}
               activeOpacity={0.75}
             >
-              <View style={[s.checkSquare, p.iccidVerified && { backgroundColor: C.green, borderColor: C.green }]}>
+              <View
+                className={`w-5 h-5 rounded-[5px] border-[1.5px] items-center justify-center ${
+                  p.iccidVerified ? 'bg-green border-green' : 'border-text3'
+                }`}
+              >
                 {p.iccidVerified ? <Feather name="check" size={11} color="#fff" /> : null}
               </View>
-              <Text style={{ fontSize: 12, color: p.iccidVerified ? C.green : C.text2 }}>
+              <Text className={`text-xs ${p.iccidVerified ? 'text-green' : 'text-text2'}`}>
                 ICCID de SIM verificado en terreno
               </Text>
             </TouchableOpacity>
@@ -238,25 +260,28 @@ export function DetailScreen(p: DetailProps) {
         {/* EVIDENCIAS */}
         {p.tab === 'evidencias' && (
           <View>
-            <View style={[s.row, { marginBottom: 12 }]}>
+            <View className="flex-row items-center justify-between mb-3">
               <SectionLabel>Fotos</SectionLabel>
-              <Text style={[s.mono, { fontSize: 10, color: C.text3 }]}>
+              <Text className="font-mono text-[10px] text-text3">
                 {p.evidence.length}/{MAX_PHOTOS}
               </Text>
             </View>
-            <View style={s.photoGrid}>
+            <View className="flex-row flex-wrap gap-2">
               {p.evidence.map((n) => (
-                <View key={n} style={[s.photoCell, { backgroundColor: C.orange + '20', borderColor: C.orange + '30' }]}>
-                  <Feather name="camera" size={20} color={C.orange} />
+                <View
+                  key={n}
+                  className="w-[30%] aspect-square rounded-[10px] border items-center justify-center bg-brand/20 border-brand/30"
+                >
+                  <Feather name="camera" size={20} color="#F97316" />
                 </View>
               ))}
               {p.evidence.length < MAX_PHOTOS && (
                 <TouchableOpacity
                   onPress={p.onAddEvidence}
-                  style={[s.photoCell, { borderStyle: 'dashed', borderColor: C.border }]}
+                  className="w-[30%] aspect-square rounded-[10px] border border-dashed border-border items-center justify-center"
                   activeOpacity={0.7}
                 >
-                  <Feather name="plus" size={20} color={C.text3} />
+                  <Feather name="plus" size={20} color="#4B5563" />
                 </TouchableOpacity>
               )}
             </View>
@@ -269,29 +294,36 @@ export function DetailScreen(p: DetailProps) {
             value={p.notes}
             onChangeText={p.onNotesChange}
             placeholder="Agrega notas u observaciones de la visita"
-            placeholderTextColor={C.text3}
+            placeholderTextColor="#4B5563"
             multiline
             numberOfLines={9}
-            style={s.textarea}
+            className="bg-card border border-border rounded-xl p-3 text-text1 text-[13px] min-h-[120px]"
+            style={{ textAlignVertical: 'top' }}
           />
         )}
       </ScrollView>
 
       {/* Finalize bar */}
       {p.visit.status !== 'completada' && p.tab !== 'resumen' && (
-        <View style={s.finalizeBar}>
+        <View className="p-3.5 border-t border-border">
           {!p.allDone && (
-            <Text style={s.finalizeHint}>
+            <Text className="text-[10px] text-text3 text-center mb-[7px]">
               Completa el checklist para finalizar · {p.doneCount}/{total}
             </Text>
           )}
           <TouchableOpacity
             onPress={p.onFinalize}
             disabled={!p.allDone}
-            style={[s.primaryBtn, !p.allDone && s.primaryBtnDisabled]}
+            className={`rounded-xl p-[13px] items-center ${p.allDone ? 'bg-brand' : 'bg-surface'}`}
+            style={p.allDone ? {
+              shadowColor: '#F97316', shadowOpacity: 0.35, shadowRadius: 12,
+              shadowOffset: { width: 0, height: 4 }, elevation: 6,
+            } : undefined}
             activeOpacity={p.allDone ? 0.8 : 1}
           >
-            <Text style={[s.primaryBtnText, !p.allDone && { color: C.text3 }]}>Finalizar visita</Text>
+            <Text className={`text-sm font-bold ${p.allDone ? 'text-white' : 'text-text3'}`}>
+              Finalizar visita
+            </Text>
           </TouchableOpacity>
         </View>
       )}

@@ -1,5 +1,4 @@
 import type { Visit, Status, IconName, TabId } from '../types';
-import { C } from '../theme/colors';
 
 // ─── Datos ────────────────────────────────────────────────────────────────────
 export const MAX_PHOTOS = 6;
@@ -39,13 +38,17 @@ export const CHECKLIST_ITEMS = [
   { id: 5, title: 'Cierre y validación',         desc: 'Cliente conforme con el servicio' },
 ];
 
-export const STATUS_META: Record<Status, { label: string; bg: string; color: string; dot: string }> = {
-  programada: { label: 'Programada', bg: 'rgba(255,255,255,0.07)', color: C.text2,      dot: C.text3 },
-  en_ruta:    { label: 'En ruta',    bg: C.blueDim,                color: C.blue,       dot: C.blue },
-  en_curso:   { label: 'En curso',   bg: C.orangeDim,              color: C.orangeText, dot: C.orange },
-  completada: { label: 'Completada', bg: C.greenDim,               color: C.green,      dot: C.green },
+// Clases Tailwind por estado (reemplaza los hex que antes calculaba StatusBadge)
+export const STATUS_META: Record<Status, { label: string; wrapClass: string; dotClass: string; textClass: string }> = {
+  programada: { label: 'Programada', wrapClass: 'bg-white/[0.07]', dotClass: 'bg-text3', textClass: 'text-text2' },
+  en_ruta:    { label: 'En ruta',    wrapClass: 'bg-blue-dim',     dotClass: 'bg-blue',  textClass: 'text-blue' },
+  en_curso:   { label: 'En curso',   wrapClass: 'bg-brand-dim',    dotClass: 'bg-brand', textClass: 'text-brand-text' },
+  completada: { label: 'Completada', wrapClass: 'bg-green-dim',    dotClass: 'bg-green', textClass: 'text-green' },
 };
 
+// Estos se mantienen como hex: son un catálogo abierto por servicio (nuevo servicio =
+// nuevo color), y Tailwind sólo puede aplicar en compilación clases literales, no
+// strings armados en tiempo de ejecución a partir de datos.
 export const SERVICE_COLOR: Record<string, string> = {
   'Instalación de Internet': '#60A5FA',
   'Mantención de equipo':    '#FBBF24',
