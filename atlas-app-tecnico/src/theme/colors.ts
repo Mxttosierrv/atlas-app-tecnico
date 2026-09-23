@@ -1,0 +1,22 @@
+// ─── Tokens de color ──────────────────────────────────────────────────────────
+export const C = {
+  bg:           '#0C0C0C',
+  card:         '#1A1A1A',
+  surface:      '#242424',
+  orange:       '#F97316',
+  orangeDim:    '#2A1608',
+  orangeText:   '#FB923C',
+  border:       'rgba(255,255,255,0.07)',
+  borderBright: 'rgba(255,255,255,0.11)',
+  text1:        '#F5F5F5',
+  text2:        '#9CA3AF',
+  text3:        '#4B5563',
+  blue:         '#60A5FA',
+  blueDim:      '#0D1B2E',
+  green:        '#4ADE80',
+  greenDim:     '#0A1F0F',
+  red:          '#F87171',
+  redDim:       '#1F0808',
+  amber:        '#FBBF24',
+  amberDim:     '#1F1507',
+};
