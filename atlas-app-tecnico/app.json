@@ -20,6 +20,16 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }
+    },
+
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Atlas Técnico necesita acceder a tus fotos para adjuntar evidencia de las visitas.",
+          "cameraPermission": "Atlas Técnico necesita usar la cámara para tomar fotos de evidencia en terreno."
+        }
+      ]
+    ]
   }
 }

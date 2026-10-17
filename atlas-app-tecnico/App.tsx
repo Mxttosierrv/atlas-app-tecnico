@@ -18,7 +18,7 @@ export default function AtlasTecnico() {
   const [tab, setTab]                     = useState<TabId>('resumen');
   const [online, setOnline]               = useState(true);
   const [checkedMap, setCheckedMap]       = useState<Record<string, Record<number, boolean>>>({});
-  const [evidenceMap, setEvidenceMap]     = useState<Record<string, number[]>>({});
+  const [evidenceMap, setEvidenceMap]     = useState<Record<string, string[]>>({});
   const [notesMap, setNotesMap]           = useState<Record<string, string>>({});
   const [dbmMap, setDbmMap]               = useState<Record<string, number>>({});
   const [estadoMap, setEstadoMap]         = useState<Record<string, Estado>>({});
@@ -30,7 +30,7 @@ export default function AtlasTecnico() {
   const checked: Record<number, boolean> = checkedMap[key] ?? {};
   const doneCount = CHECKLIST_ITEMS.filter((i) => checked[i.id]).length;
   const allDone   = doneCount === CHECKLIST_ITEMS.length;
-  const evidence: number[] = evidenceMap[key] ?? [];
+  const evidence: string[] = evidenceMap[key] ?? [];
   const dbm       = dbmMap[key] ?? -76;
   const estado: Estado = estadoMap[key] ?? 'operativo';
 
@@ -55,13 +55,21 @@ export default function AtlasTecnico() {
     setTab('checklist');
   }
 
-  function addEvidence() {
+  function addEvidence(uri: string) {
     setEvidenceMap((prev) => {
-      const arr: number[] = prev[key] ?? [];
+      const arr: string[] = prev[key] ?? [];
       if (arr.length >= MAX_PHOTOS) return prev;
-      return { ...prev, [key]: [...arr, arr.length + 1] };
+      return { ...prev, [key]: [...arr, uri] };
     });
   }
+ 
+  function removeEvidence(uri: string) {
+    setEvidenceMap((prev) => {
+      const arr: string[] = prev[key] ?? [];
+      return { ...prev, [key]: arr.filter((u) => u !== uri) };
+    });
+  }
+
 
   function finalize() {
     setVisits((prev) =>
@@ -99,6 +107,7 @@ export default function AtlasTecnico() {
             onConfirmAccess={confirmAccess}
             evidence={evidence}
             onAddEvidence={addEvidence}
+            onRemoveEvidence={removeEvidence}
             notes={notesMap[key] ?? ''}
             onNotesChange={(t) => setNotesMap((prev) => ({ ...prev, [key]: t }))}
             dbm={dbm}

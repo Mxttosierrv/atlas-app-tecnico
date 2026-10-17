@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking, Alert, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
+import * as ImagePicker from 'expo-image-picker';
 
 import { ConnPill, StatusBadge, SectionLabel, DataRow, Card } from '../components/common';
+import { PhotoViewer } from '../components/PhotoViewer';
 import { CHECKLIST_ITEMS, TABS, MAX_PHOTOS } from '../data/mockData';
 import { dbmQuality } from '../utils/helpers';
 import type { Visit, TabId, Estado } from '../types';
@@ -16,7 +18,7 @@ type DetailProps = {
   onBack: () => void;
   checked: Record<number, boolean>; doneCount: number; allDone: boolean;
   onToggle: (id: number) => void; onConfirmAccess: () => void;
-  evidence: number[]; onAddEvidence: () => void;
+  evidence: string[]; onAddEvidence: (uri: string) => void; onRemoveEvidence: (uri: string) => void;
   notes: string; onNotesChange: (t: string) => void;
   dbm: number; onDbmChange: (v: number) => void;
   estado: Estado; onEstadoChange: (v: Estado) => void;
@@ -29,6 +31,54 @@ export function DetailScreen(p: DetailProps) {
   const quality  = dbmQuality(p.dbm);
   const total    = CHECKLIST_ITEMS.length;
   const progress = `${(p.doneCount / total) * 100}%` as `${number}%`;
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+
+  function alertPermisoFaltante(mensaje: string) {
+    Alert.alert('Permiso requerido', mensaje, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Abrir ajustes', onPress: () => Linking.openSettings() },
+    ]);
+  }
+ 
+  async function tomarFoto() {
+    const permiso = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permiso.granted) {
+      alertPermisoFaltante('Activa el acceso a la cámara para registrar evidencia fotográfica en terreno.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.6 });
+    if (!result.canceled && result.assets?.[0]) {
+      p.onAddEvidence(result.assets[0].uri);
+    }
+  }
+ 
+  async function elegirDeGaleria() {
+    const permiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permiso.granted) {
+      alertPermisoFaltante('Activa el acceso a tus fotos para adjuntar evidencia desde la galería.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.6 });
+    if (!result.canceled && result.assets?.[0]) {
+      p.onAddEvidence(result.assets[0].uri);
+    }
+  }
+ 
+  function handleAddEvidence() {
+    if (p.evidence.length >= MAX_PHOTOS) return;
+    Alert.alert('Agregar evidencia', '¿Cómo quieres adjuntar la foto?', [
+      { text: 'Tomar foto', onPress: tomarFoto },
+      { text: 'Elegir de galería', onPress: elegirDeGaleria },
+      { text: 'Cancelar', style: 'cancel' },
+    ]);
+  }
+ 
+  function handleRemoveEvidence(uri: string) {
+    Alert.alert('Quitar foto', '¿Eliminar esta foto de la evidencia?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Eliminar', style: 'destructive', onPress: () => p.onRemoveEvidence(uri) },
+    ]);
+  }
 
   return (
     <View className="flex-1">
@@ -267,17 +317,26 @@ export function DetailScreen(p: DetailProps) {
               </Text>
             </View>
             <View className="flex-row flex-wrap gap-2">
-              {p.evidence.map((n) => (
-                <View
-                  key={n}
-                  className="w-[30%] aspect-square rounded-[10px] border items-center justify-center bg-brand/20 border-brand/30"
+              {p.evidence.map((uri, idx) => (
+                <TouchableOpacity
+                  key={uri}
+                  onPress={() => setPreviewIndex(idx)}
+                  onLongPress={() => handleRemoveEvidence(uri)}
+                  className="w-[30%] aspect-square rounded-[10px] border border-brand/30 overflow-hidden relative"
+                  activeOpacity={0.85}
                 >
-                  <Feather name="camera" size={20} color="#F97316" />
-                </View>
+                  <Image source={{ uri }} className="w-full h-full" resizeMode="cover" />
+                  <TouchableOpacity
+                    onPress={() => handleRemoveEvidence(uri)}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 items-center justify-center"
+                  >
+                    <Feather name="x" size={12} color="#F5F5F5" />
+                  </TouchableOpacity>
+                </TouchableOpacity>
               ))}
               {p.evidence.length < MAX_PHOTOS && (
                 <TouchableOpacity
-                  onPress={p.onAddEvidence}
+                  onPress={handleAddEvidence}
                   className="w-[30%] aspect-square rounded-[10px] border border-dashed border-border items-center justify-center"
                   activeOpacity={0.7}
                 >
@@ -285,6 +344,9 @@ export function DetailScreen(p: DetailProps) {
                 </TouchableOpacity>
               )}
             </View>
+            <Text className="text-[10px] text-text3 mt-2">
+              Toca una foto para verla en grande · mantenla presionada para eliminarla
+            </Text>
           </View>
         )}
 
@@ -327,6 +389,14 @@ export function DetailScreen(p: DetailProps) {
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Visor de fotos: zoom + deslizar entre fotos */}
+      <PhotoViewer
+        uris={p.evidence}
+        index={previewIndex}
+        onClose={() => setPreviewIndex(null)}
+      />
+
     </View>
   );
 }
