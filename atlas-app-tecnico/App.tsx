@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { CHECKLIST_ITEMS, MAX_PHOTOS, VISITS_INIT } from './src/data/mockData';
 import { AgendaScreen } from './src/screens/AgendaScreen';
 import { DetailScreen } from './src/screens/DetailScreen';
@@ -11,7 +12,8 @@ import { SuccessScreen } from './src/screens/SuccessScreen';
 import type { Estado, TabId, Visit, ViewName } from './src/types';
 
 // ─── App principal ────────────────────────────────────────────────────────────
-export default function AtlasTecnico() {
+function AtlasTecnicoApp() {
+  const { isDark } = useTheme();
   const [visits, setVisits]               = useState<Visit[]>(VISITS_INIT);
   const [view, setView]                   = useState<ViewName>('agenda');
   const [selectedId, setSelectedId]       = useState<string | null>(null);
@@ -62,14 +64,13 @@ export default function AtlasTecnico() {
       return { ...prev, [key]: [...arr, uri] };
     });
   }
- 
+
   function removeEvidence(uri: string) {
     setEvidenceMap((prev) => {
       const arr: string[] = prev[key] ?? [];
       return { ...prev, [key]: arr.filter((u) => u !== uri) };
     });
   }
-
 
   function finalize() {
     setVisits((prev) =>
@@ -81,7 +82,7 @@ export default function AtlasTecnico() {
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex-1 bg-bg">
-        <StatusBar style="light" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
 
         {view === 'agenda' && (
           <AgendaScreen
@@ -127,5 +128,13 @@ export default function AtlasTecnico() {
         )}
       </SafeAreaView>
     </SafeAreaProvider>
+  );
+}
+
+export default function AtlasTecnico() {
+  return (
+    <ThemeProvider>
+      <AtlasTecnicoApp />
+    </ThemeProvider>
   );
 }

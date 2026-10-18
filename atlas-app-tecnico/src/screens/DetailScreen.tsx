@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Linking, Alert, Image } from 'react-native';
+import {
+  View, Text, ScrollView, TouchableOpacity, TextInput,
+  Image, Alert, Linking,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 
 import { ConnPill, StatusBadge, SectionLabel, DataRow, Card } from '../components/common';
 import { PhotoViewer } from '../components/PhotoViewer';
+import { useTheme } from '../theme/ThemeContext';
 import { CHECKLIST_ITEMS, TABS, MAX_PHOTOS } from '../data/mockData';
 import { dbmQuality } from '../utils/helpers';
 import type { Visit, TabId, Estado } from '../types';
@@ -28,7 +32,8 @@ type DetailProps = {
 };
 
 export function DetailScreen(p: DetailProps) {
-  const quality  = dbmQuality(p.dbm);
+  const { colors } = useTheme();
+  const quality  = dbmQuality(p.dbm, colors);
   const total    = CHECKLIST_ITEMS.length;
   const progress = `${(p.doneCount / total) * 100}%` as `${number}%`;
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
@@ -39,7 +44,7 @@ export function DetailScreen(p: DetailProps) {
       { text: 'Abrir ajustes', onPress: () => Linking.openSettings() },
     ]);
   }
- 
+
   async function tomarFoto() {
     const permiso = await ImagePicker.requestCameraPermissionsAsync();
     if (!permiso.granted) {
@@ -51,7 +56,7 @@ export function DetailScreen(p: DetailProps) {
       p.onAddEvidence(result.assets[0].uri);
     }
   }
- 
+
   async function elegirDeGaleria() {
     const permiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permiso.granted) {
@@ -63,7 +68,7 @@ export function DetailScreen(p: DetailProps) {
       p.onAddEvidence(result.assets[0].uri);
     }
   }
- 
+
   function handleAddEvidence() {
     if (p.evidence.length >= MAX_PHOTOS) return;
     Alert.alert('Agregar evidencia', '¿Cómo quieres adjuntar la foto?', [
@@ -72,7 +77,7 @@ export function DetailScreen(p: DetailProps) {
       { text: 'Cancelar', style: 'cancel' },
     ]);
   }
- 
+
   function handleRemoveEvidence(uri: string) {
     Alert.alert('Quitar foto', '¿Eliminar esta foto de la evidencia?', [
       { text: 'Cancelar', style: 'cancel' },
@@ -87,9 +92,9 @@ export function DetailScreen(p: DetailProps) {
         <View className="flex-row items-center justify-between mb-3">
           <TouchableOpacity
             onPress={p.onBack}
-            className="bg-white/[0.06] border border-border rounded-[9px] p-[7px] items-center justify-center"
+            className="bg-overlay/[0.06] border border-border rounded-[9px] p-[7px] items-center justify-center"
           >
-            <Feather name="arrow-left" size={16} color="#F5F5F5" />
+            <Feather name="arrow-left" size={16} color={colors.text1} />
           </TouchableOpacity>
           <ConnPill online={p.online} onToggle={p.onToggleOnline} />
         </View>
@@ -226,7 +231,7 @@ export function DetailScreen(p: DetailProps) {
                     className="flex-1 mx-0.5 rounded-[3px]"
                     style={{
                       height: 6 + b * 4,
-                      backgroundColor: b <= quality.bars ? quality.color : '#242424',
+                      backgroundColor: b <= quality.bars ? quality.color : colors.surface,
                     }}
                   />
                 ))}
@@ -238,9 +243,9 @@ export function DetailScreen(p: DetailProps) {
                 step={1}
                 value={p.dbm}
                 onValueChange={p.onDbmChange}
-                minimumTrackTintColor="#F97316"
-                maximumTrackTintColor="#242424"
-                thumbTintColor="#F97316"
+                minimumTrackTintColor={colors.brand}
+                maximumTrackTintColor={colors.surface}
+                thumbTintColor={colors.brand}
                 style={{ width: '100%' }}
               />
 
@@ -277,7 +282,7 @@ export function DetailScreen(p: DetailProps) {
                   value={p.fallaNote}
                   onChangeText={p.onFallaNoteChange}
                   placeholder="Describe la falla encontrada"
-                  placeholderTextColor="#4B5563"
+                  placeholderTextColor={colors.text3}
                   multiline
                   numberOfLines={3}
                   className="bg-card border border-red/30 rounded-xl p-3 text-text1 text-[13px] min-h-[120px]"
@@ -340,7 +345,7 @@ export function DetailScreen(p: DetailProps) {
                   className="w-[30%] aspect-square rounded-[10px] border border-dashed border-border items-center justify-center"
                   activeOpacity={0.7}
                 >
-                  <Feather name="plus" size={20} color="#4B5563" />
+                  <Feather name="plus" size={20} color={colors.text3} />
                 </TouchableOpacity>
               )}
             </View>
@@ -356,7 +361,7 @@ export function DetailScreen(p: DetailProps) {
             value={p.notes}
             onChangeText={p.onNotesChange}
             placeholder="Agrega notas u observaciones de la visita"
-            placeholderTextColor="#4B5563"
+            placeholderTextColor={colors.text3}
             multiline
             numberOfLines={9}
             className="bg-card border border-border rounded-xl p-3 text-text1 text-[13px] min-h-[120px]"
@@ -396,7 +401,6 @@ export function DetailScreen(p: DetailProps) {
         index={previewIndex}
         onClose={() => setPreviewIndex(null)}
       />
-
     </View>
   );
 }

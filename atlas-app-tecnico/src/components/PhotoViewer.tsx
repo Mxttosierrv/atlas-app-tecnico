@@ -173,7 +173,7 @@ function ViewerContent({ uris, startIndex, onClose }: {
         }}
       >
         <View className="px-3 py-1.5 rounded-full bg-white/15">
-          <Text className="font-mono text-xs text-text1">
+          <Text className="font-mono text-xs text-white">
             {page + 1} / {uris.length}
           </Text>
         </View>
@@ -191,7 +191,7 @@ function ViewerContent({ uris, startIndex, onClose }: {
           pointerEvents="none"
           style={{ position: 'absolute', bottom: insets.bottom + 16, left: 0, right: 0, alignItems: 'center' }}
         >
-          <Text className="text-[11px] text-text2">
+          <Text className="text-[11px] text-white/70">
             Pellizca o toca dos veces para ampliar{uris.length > 1 ? ' · desliza para cambiar de foto' : ''}
           </Text>
         </View>

@@ -40,7 +40,7 @@ export const CHECKLIST_ITEMS = [
 
 // Clases Tailwind por estado (reemplaza los hex que antes calculaba StatusBadge)
 export const STATUS_META: Record<Status, { label: string; wrapClass: string; dotClass: string; textClass: string }> = {
-  programada: { label: 'Programada', wrapClass: 'bg-white/[0.07]', dotClass: 'bg-text3', textClass: 'text-text2' },
+  programada: { label: 'Programada', wrapClass: 'bg-overlay/[0.07]', dotClass: 'bg-text3', textClass: 'text-text2' },
   en_ruta:    { label: 'En ruta',    wrapClass: 'bg-blue-dim',     dotClass: 'bg-blue',  textClass: 'text-blue' },
   en_curso:   { label: 'En curso',   wrapClass: 'bg-brand-dim',    dotClass: 'bg-brand', textClass: 'text-brand-text' },
   completada: { label: 'Completada', wrapClass: 'bg-green-dim',    dotClass: 'bg-green', textClass: 'text-green' },

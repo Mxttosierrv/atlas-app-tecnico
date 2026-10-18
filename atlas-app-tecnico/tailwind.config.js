@@ -1,4 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+const { dark } = require('./src/theme/palette');
+
+// Cada color apunta a una variable CSS (--c-<nombre>) que cambia según el tema.
+// Formato `rgb(var(--x) / <alpha-value>)` => permite opacidades: bg-brand/20
+const themed = Object.fromEntries(
+  Object.keys(dark).map((k) => [k, `rgb(var(--c-${k}) / <alpha-value>)`]),
+);
+
 module.exports = {
   content: [
     './App.{js,jsx,ts,tsx}',
@@ -8,39 +16,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Fondo / superficies
-        bg:      '#0C0C0C',
-        card:    '#1A1A1A',
-        surface: '#242424',
-
-        // Marca (antes "orange")
-        brand:      '#F97316',
-        'brand-dim':  '#2A1608',
-        'brand-text': '#FB923C',
-
-        // Bordes
-        border:        'rgba(255,255,255,0.07)',
-        'border-bright': 'rgba(255,255,255,0.11)',
-
-        // Texto
-        text1: '#F5F5F5',
-        text2: '#9CA3AF',
-        text3: '#4B5563',
-
-        // Estados
-        blue:       '#60A5FA',
-        'blue-dim':   '#0D1B2E',
-        green:      '#4ADE80',
-        'green-dim':  '#0A1F0F',
-        red:        '#F87171',
-        'red-dim':    '#1F0808',
-        amber:      '#FBBF24',
-        'amber-dim':  '#1F1507',
+        ...themed,
+        // Bordes: usan el color "overlay" (blanco en oscuro, negro en claro) con alfa fijo
+        border:          'rgb(var(--c-overlay) / 0.07)',
+        'border-bright': 'rgb(var(--c-overlay) / 0.11)',
       },
       fontFamily: {
         mono: ['monospace'],
       },
     },
   },
-  plugins: [],
-}
+  plugins: [
+    // Valores por defecto (tema oscuro) para cualquier elemento fuera del ThemeProvider
+    ({ addBase }) =>
+      addBase({
+        ':root': Object.fromEntries(Object.entries(dark).map(([k, v]) => [`--c-${k}`, v])),
+      }),
+  ],
+};

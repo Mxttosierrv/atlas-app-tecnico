@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
+import { useTheme } from '../theme/ThemeContext';
 import type { Visit } from '../types';
 
 // ─── Pantalla Éxito ───────────────────────────────────────────────────────────
@@ -12,10 +13,11 @@ type SuccessProps = {
 };
 
 export function SuccessScreen({ visit, online, onDone }: SuccessProps) {
+  const { colors } = useTheme();
   return (
     <View className="flex-1 items-center justify-center p-6">
       <View className="w-16 h-16 rounded-full bg-green-dim border border-green/25 items-center justify-center mb-[18px]">
-        <Feather name="check-circle" size={30} color="#4ADE80" />
+        <Feather name="check-circle" size={30} color={colors.green} />
       </View>
       <Text className="text-text1 font-bold text-[22px] mb-1.5 tracking-tight">Visita finalizada</Text>
       <Text className="text-xs text-text2 mb-5 text-center max-w-[230px]">
@@ -26,7 +28,7 @@ export function SuccessScreen({ visit, online, onDone }: SuccessProps) {
           online ? 'bg-green-dim border-green/30' : 'bg-brand-dim border-brand/30'
         }`}
       >
-        <Feather name={online ? 'check' : 'alert-triangle'} size={12} color={online ? '#4ADE80' : '#FB923C'} />
+        <Feather name={online ? 'check' : 'alert-triangle'} size={12} color={online ? colors.green : colors.brandText} />
         <Text className={`text-xs ml-1.5 font-medium ${online ? 'text-green' : 'text-brand-text'}`}>
           {online ? 'Sincronizada con el sistema' : 'Guardada · pendiente de sincronizar'}
         </Text>
